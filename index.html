@@ -1,117 +1,199 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>W&W Ecosystem Map</title>
 <style>
-.eco-card { transition: transform 0.15s, box-shadow 0.15s; cursor: pointer; }
-.eco-card:hover { transform: translateY(-2px); }
-.badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 20px; }
-.tag-direct { background: #d1fae5; color: #065f46; }
-.tag-indirect { background: #fef3c7; color: #92400e; }
-.tag-both { background: #ede9fe; color: #4c1d95; }
-.section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-text-tertiary); margin: 0 0 10px; }
-.entry-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #ffffff;
+    --bg-secondary: #f5f5f4;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6b7280;
+    --text-tertiary: #9ca3af;
+    --border: rgba(0,0,0,0.10);
+    --border-hover: rgba(0,0,0,0.20);
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --gold: #C9A84C;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1c;
+      --bg-secondary: #2a2a2a;
+      --text-primary: #f0ede8;
+      --text-secondary: #a09e98;
+      --text-tertiary: #6b6a65;
+      --border: rgba(255,255,255,0.10);
+      --border-hover: rgba(255,255,255,0.22);
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    padding: 32px 24px 48px;
+    max-width: 960px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  header { margin-bottom: 28px; }
+  header h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+  header p { font-size: 13px; color: var(--text-secondary); }
+  header .sub { font-size: 12px; color: var(--gold); font-weight: 500; margin-top: 2px; }
+
+  .metrics { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; margin-bottom: 28px; }
+  .metric-card { background: var(--bg-secondary); border-radius: var(--radius-lg); padding: 14px 16px; border: 0.5px solid var(--border); }
+  .metric-card .num { font-size: 28px; font-weight: 600; line-height: 1.1; margin-bottom: 3px; }
+  .metric-card .label { font-size: 12px; color: var(--text-secondary); }
+
+  .section-label { font-size: 11px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-tertiary); margin: 0 0 10px; }
+
+  .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; margin-bottom: 24px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; margin-bottom: 24px; }
+
+  .eco-card {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px 16px;
+    transition: transform 0.15s, box-shadow 0.15s;
+    cursor: default;
+  }
+  .eco-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .eco-card .title { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+  .eco-card .desc { font-size: 12px; color: var(--text-secondary); margin-bottom: 10px; line-height: 1.5; }
+  .eco-card .entry { font-size: 11px; color: var(--text-tertiary); margin-top: 10px; display: flex; align-items: center; gap: 5px; }
+  .entry-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+
+  .badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 9px; border-radius: 20px; }
+  .badge-indirect  { background: #fef3c7; color: #92400e; }
+  .badge-direct    { background: #d1fae5; color: #065f46; }
+  .badge-both      { background: #ede9fe; color: #4c1d95; }
+  .badge-licensed  { background: var(--bg-secondary); color: var(--text-secondary); border: 0.5px solid var(--border); }
+
+  @media (prefers-color-scheme: dark) {
+    .badge-indirect { background: #451a03; color: #fcd34d; }
+    .badge-direct   { background: #052e16; color: #6ee7b7; }
+    .badge-both     { background: #2e1065; color: #c4b5fd; }
+  }
+
+  .footer-note {
+    margin-top: 8px;
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    border: 0.5px solid var(--border);
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .footer-note strong { color: var(--text-primary); font-weight: 500; }
+
+  .divider { border: none; border-top: 0.5px solid var(--border); margin: 20px 0; }
 </style>
+</head>
+<body>
 
-<div style="padding: 1rem 0 0;">
-  <div style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; margin-bottom: 20px;">
-    <div style="background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 14px 16px; border: 0.5px solid var(--color-border-tertiary);">
-      <p style="margin: 0 0 2px; font-size: 22px; font-weight: 500;">8</p>
-      <p style="margin: 0; font-size: 12px; color: var(--color-text-secondary);">Active offerings</p>
-    </div>
-    <div style="background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 14px 16px; border: 0.5px solid var(--color-border-tertiary);">
-      <p style="margin: 0 0 2px; font-size: 22px; font-weight: 500;">5</p>
-      <p style="margin: 0; font-size: 12px; color: var(--color-text-secondary);">Revenue touchpoints</p>
-    </div>
-    <div style="background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 14px 16px; border: 0.5px solid var(--color-border-tertiary);">
-      <p style="margin: 0 0 2px; font-size: 22px; font-weight: 500;">0</p>
-      <p style="margin: 0; font-size: 12px; color: var(--color-text-secondary);">Unified entry points</p>
-    </div>
+<header>
+  <h1>Wisdom &amp; Wellness — Ecosystem Map</h1>
+  <p class="sub">Sevenstudios · Phase Zero · March 2026</p>
+  <p style="margin-top:6px; font-size:13px; color: var(--text-secondary);">A full map of every W&amp;W offering: how it earns, who it reaches, and where it lives in the stack.</p>
+</header>
+
+<div class="metrics">
+  <div class="metric-card">
+    <div class="num">8</div>
+    <div class="label">Active offerings</div>
   </div>
-
-  <p class="section-label">Discovery layer — indirect revenue</p>
-  <div style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; margin-bottom: 20px;">
-    <div class="eco-card" onclick="sendPrompt('Tell me more about the Wisdom & Wellness podcast and how it drives the funnel')" style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-left: 3px solid #EF9F27; border-radius: var(--border-radius-lg); padding: 14px 16px;">
-      <p style="margin: 0 0 6px; font-size: 14px; font-weight: 500;">Podcast / Audio</p>
-      <p style="margin: 0 0 10px; font-size: 12px; color: var(--color-text-secondary);">Weekly content. Emotional & spiritual growth for African women.</p>
-      <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-        <span class="badge tag-indirect">Indirect revenue</span>
-      </div>
-      <p style="margin: 10px 0 0; font-size: 11px; color: var(--color-text-tertiary);"><span class="entry-dot" style="background:#EF9F27"></span>Website · Podcast apps · Instagram</p>
-    </div>
-    <div class="eco-card" onclick="sendPrompt('How does Instagram function as the top of funnel for Wisdom & Wellness?')" style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-left: 3px solid #EF9F27; border-radius: var(--border-radius-lg); padding: 14px 16px;">
-      <p style="margin: 0 0 6px; font-size: 14px; font-weight: 500;">Instagram</p>
-      <p style="margin: 0 0 10px; font-size: 12px; color: var(--color-text-secondary);">Daily content. New audience discovery. Top of funnel.</p>
-      <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-        <span class="badge tag-indirect">Indirect revenue</span>
-      </div>
-      <p style="margin: 10px 0 0; font-size: 11px; color: var(--color-text-tertiary);"><span class="entry-dot" style="background:#EF9F27"></span>Instagram profile</p>
-    </div>
-    <div class="eco-card" onclick="sendPrompt('What role do the newsletter and Sunday Nuggets play in the W&W ecosystem?')" style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-left: 3px solid #EF9F27; border-radius: var(--border-radius-lg); padding: 14px 16px;">
-      <p style="margin: 0 0 6px; font-size: 14px; font-weight: 500;">Newsletter / Sunday Nuggets</p>
-      <p style="margin: 0 0 10px; font-size: 12px; color: var(--color-text-secondary);">Weekly email. Drives discovery, brand trust and conversion.</p>
-      <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-        <span class="badge tag-indirect">Indirect revenue</span>
-      </div>
-      <p style="margin: 10px 0 0; font-size: 11px; color: var(--color-text-tertiary);"><span class="entry-dot" style="background:#EF9F27"></span>Website · Instagram links</p>
-    </div>
+  <div class="metric-card">
+    <div class="num">5</div>
+    <div class="label">Revenue touchpoints</div>
   </div>
-
-  <p class="section-label">Core revenue layer — direct</p>
-  <div style="display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; margin-bottom: 20px;">
-    <div class="eco-card" onclick="sendPrompt('Explain the Girl Pal Squad membership and how GoHighLevel and GoCollab power it')" style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-left: 3px solid #3B8BD4; border-radius: var(--border-radius-lg); padding: 14px 16px;">
-      <p style="margin: 0 0 6px; font-size: 14px; font-weight: 500;">Girl Pal Squad — Membership</p>
-      <p style="margin: 0 0 10px; font-size: 12px; color: var(--color-text-secondary);">Core community. Belonging, accountability and growth for subscribed members.</p>
-      <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-        <span class="badge tag-direct">Direct — subscription</span>
-      </div>
-      <p style="margin: 10px 0 0; font-size: 11px; color: var(--color-text-tertiary);"><span class="entry-dot" style="background:#3B8BD4"></span>Website join page → Ghutte / GoCollab</p>
-    </div>
-    <div class="eco-card" onclick="sendPrompt('How do events and ticketing work for Wisdom & Wellness? What is Unlimited Walkfest?')" style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-left: 3px solid #3B8BD4; border-radius: var(--border-radius-lg); padding: 14px 16px;">
-      <p style="margin: 0 0 6px; font-size: 14px; font-weight: 500;">Events — Unlimited Walkfest</p>
-      <p style="margin: 0 0 10px; font-size: 12px; color: var(--color-text-secondary);">Seasonal physical events. Sell out within hours. Community + broader public.</p>
-      <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-        <span class="badge tag-direct">Direct — ticket sales</span>
-      </div>
-      <p style="margin: 10px 0 0; font-size: 11px; color: var(--color-text-tertiary);"><span class="entry-dot" style="background:#3B8BD4"></span>Website · External ticketing · Instagram</p>
-    </div>
-    <div class="eco-card" onclick="sendPrompt('What are the Wisdom & Wellness programs and journeys and how do they work?')" style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-left: 3px solid #1D9E75; border-radius: var(--border-radius-lg); padding: 14px 16px;">
-      <p style="margin: 0 0 6px; font-size: 14px; font-weight: 500;">Programs & Journeys</p>
-      <p style="margin: 0 0 10px; font-size: 12px; color: var(--color-text-secondary);">Digital guided journeys, fasts, challenges, prayer series. Campaign-based.</p>
-      <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-        <span class="badge tag-both">Direct + indirect</span>
-      </div>
-      <p style="margin: 10px 0 0; font-size: 11px; color: var(--color-text-tertiary);"><span class="entry-dot" style="background:#1D9E75"></span>Website funnel · Membership area</p>
-    </div>
-    <div class="eco-card" onclick="sendPrompt('What products does Wisdom & Wellness sell in their shop? How does the Aneno salon booking work?')" style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-left: 3px solid #1D9E75; border-radius: var(--border-radius-lg); padding: 14px 16px;">
-      <p style="margin: 0 0 6px; font-size: 14px; font-weight: 500;">Shop · Books · Aneno Booking</p>
-      <p style="margin: 0 0 10px; font-size: 12px; color: var(--color-text-secondary);">Physical and digital products. Ongoing. Underutilised growth opportunity.</p>
-      <div style="display: flex; flex-wrap: wrap; gap: 4px;">
-        <span class="badge tag-direct">Direct — product sales</span>
-      </div>
-      <p style="margin: 10px 0 0; font-size: 11px; color: var(--color-text-tertiary);"><span class="entry-dot" style="background:#1D9E75"></span>Website shop · Booking tool</p>
-    </div>
-  </div>
-
-  <p class="section-label">Infrastructure layer — backend</p>
-  <div style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px;">
-    <div class="eco-card" onclick="sendPrompt('What is Ghutte and how is it related to GoHighLevel and ClubSheIs?')" style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-left: 3px solid #888780; border-radius: var(--border-radius-lg); padding: 14px 16px;">
-      <p style="margin: 0 0 6px; font-size: 14px; font-weight: 500;">Ghutte (GoHighLevel)</p>
-      <p style="margin: 0 0 10px; font-size: 12px; color: var(--color-text-secondary);">CRM, payments, automations, funnels. The engine room. White-labelled. W&W does not own this.</p>
-      <span class="badge" style="background: var(--color-background-secondary); color: var(--color-text-secondary);">Licensed platform</span>
-    </div>
-    <div class="eco-card" onclick="sendPrompt('What is GoCollab and how does it relate to GoHighLevel?')" style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-left: 3px solid #888780; border-radius: var(--border-radius-lg); padding: 14px 16px;">
-      <p style="margin: 0 0 6px; font-size: 14px; font-weight: 500;">GoCollab</p>
-      <p style="margin: 0 0 10px; font-size: 12px; color: var(--color-text-secondary);">Community front-end interface for GoHighLevel. Members engage here. Cannot be extracted.</p>
-      <span class="badge" style="background: var(--color-background-secondary); color: var(--color-text-secondary);">Licensed platform</span>
-    </div>
-    <div class="eco-card" onclick="sendPrompt('What is ClubSheIs and what role do they play in the Wisdom & Wellness tech stack?')" style="background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-left: 3px solid #888780; border-radius: var(--border-radius-lg); padding: 14px 16px;">
-      <p style="margin: 0 0 6px; font-size: 14px; font-weight: 500;">ClubSheIs</p>
-      <p style="margin: 0 0 10px; font-size: 12px; color: var(--color-text-secondary);">Agency managing the GoHighLevel licence. Revenue automation, funnels, sales systems.</p>
-      <span class="badge" style="background: var(--color-background-secondary); color: var(--color-text-secondary);">Agency partner</span>
-    </div>
-  </div>
-
-  <div style="margin-top: 16px; padding: 12px 16px; background: var(--color-background-secondary); border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-tertiary);">
-    <p style="margin: 0; font-size: 12px; color: var(--color-text-secondary);">
-      <span style="font-weight: 500; color: var(--color-text-primary);">What's missing:</span> There is no single orientation layer connecting these offerings into one journey. Click any card to explore further.
-    </p>
+  <div class="metric-card">
+    <div class="num">0</div>
+    <div class="label">Unified entry points</div>
   </div>
 </div>
+
+<p class="section-label">Discovery layer — indirect revenue</p>
+<div class="grid-3">
+  <div class="eco-card" style="border-left: 3px solid #EF9F27;">
+    <p class="title">Podcast / Audio</p>
+    <p class="desc">Weekly content. Emotional &amp; spiritual growth for African women. Drives brand trust and membership conversion.</p>
+    <span class="badge badge-indirect">Indirect revenue</span>
+    <p class="entry"><span class="entry-dot" style="background:#EF9F27;"></span>Website · Podcast apps · Instagram</p>
+  </div>
+  <div class="eco-card" style="border-left: 3px solid #EF9F27;">
+    <p class="title">Instagram</p>
+    <p class="desc">Daily social content. New audience discovery. Top-of-funnel entry point for most new community members.</p>
+    <span class="badge badge-indirect">Indirect revenue</span>
+    <p class="entry"><span class="entry-dot" style="background:#EF9F27;"></span>Instagram profile</p>
+  </div>
+  <div class="eco-card" style="border-left: 3px solid #EF9F27;">
+    <p class="title">Newsletter / Sunday Nuggets</p>
+    <p class="desc">Weekly email. Drives discovery, brand trust and ongoing community conversion. Broad audience reach.</p>
+    <span class="badge badge-indirect">Indirect revenue</span>
+    <p class="entry"><span class="entry-dot" style="background:#EF9F27;"></span>Website · Instagram links</p>
+  </div>
+</div>
+
+<p class="section-label">Core revenue layer — direct</p>
+<div class="grid-2">
+  <div class="eco-card" style="border-left: 3px solid #3B8BD4;">
+    <p class="title">Girl Pal Squad — Membership</p>
+    <p class="desc">Core community. Belonging, accountability and growth for subscribed members. Ongoing subscription. Currently powered by Ghutte (GoHighLevel) and GoCollab.</p>
+    <span class="badge badge-direct">Direct — subscription</span>
+    <p class="entry"><span class="entry-dot" style="background:#3B8BD4;"></span>Website join page → Ghutte / GoCollab</p>
+  </div>
+  <div class="eco-card" style="border-left: 3px solid #3B8BD4;">
+    <p class="title">Events — Unlimited Walkfest</p>
+    <p class="desc">Seasonal physical events. Sell out within hours. Community plus broader public. High commercial demand with limited supply.</p>
+    <span class="badge badge-direct">Direct — ticket sales</span>
+    <p class="entry"><span class="entry-dot" style="background:#3B8BD4;"></span>Website · External ticketing · Instagram</p>
+  </div>
+  <div class="eco-card" style="border-left: 3px solid #1D9E75;">
+    <p class="title">Programs &amp; Journeys</p>
+    <p class="desc">Digital guided journeys, fasts, challenges, prayer series. Campaign-based frequency. Drives both direct program revenue and membership conversion.</p>
+    <span class="badge badge-both">Direct + indirect</span>
+    <p class="entry"><span class="entry-dot" style="background:#1D9E75;"></span>Website funnel · Membership area</p>
+  </div>
+  <div class="eco-card" style="border-left: 3px solid #1D9E75;">
+    <p class="title">Shop · Books · Aneno Booking</p>
+    <p class="desc">Physical and digital products plus salon bookings. Ongoing. Currently underutilised — significant growth opportunity as an in-app commerce layer.</p>
+    <span class="badge badge-direct">Direct — product sales</span>
+    <p class="entry"><span class="entry-dot" style="background:#1D9E75;"></span>Website shop · Booking tool</p>
+  </div>
+</div>
+
+<hr class="divider">
+
+<p class="section-label">Infrastructure layer — backend platforms</p>
+<div class="grid-3">
+  <div class="eco-card" style="border-left: 3px solid #888780;">
+    <p class="title">Ghutte (GoHighLevel)</p>
+    <p class="desc">CRM, payments, automations, funnels. The engine room for all W&amp;W commercial operations. White-labelled by ClubSheIs. W&amp;W does not own the underlying platform.</p>
+    <span class="badge badge-licensed">Licensed platform</span>
+  </div>
+  <div class="eco-card" style="border-left: 3px solid #888780;">
+    <p class="title">GoCollab</p>
+    <p class="desc">Community front-end interface for GoHighLevel. Where members engage daily. Migrated from Circle in December 2025. Cannot be extracted into a third-party app.</p>
+    <span class="badge badge-licensed">Licensed platform</span>
+  </div>
+  <div class="eco-card" style="border-left: 3px solid #888780;">
+    <p class="title">ClubSheIs</p>
+    <p class="desc">Agency managing the GoHighLevel licence on behalf of W&amp;W. Revenue automation, funnels, sales systems. Onboarded December 2025. Engaged separately from Sevenstudios.</p>
+    <span class="badge badge-licensed">Agency partner</span>
+  </div>
+</div>
+
+<div class="footer-note">
+  <strong>What's missing:</strong> There is no single orientation layer connecting these offerings into one continuous journey. A user encounters W&amp;W across Instagram, a podcast player, the website, GoCollab, and an external ticketing platform — with no unified home. This fragmentation is the core problem the app must solve.
+</div>
+
+</body>
+</html>
